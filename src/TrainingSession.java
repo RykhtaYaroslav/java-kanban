@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class TrainingSession {
 
     //группа
@@ -31,4 +33,38 @@ public class TrainingSession {
     public TimeOfDay getTimeOfDay() {
         return timeOfDay;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrainingSession that = (TrainingSession) o;
+        return Objects.equals(group, that.group) && Objects.equals(coach, that.coach) && dayOfWeek == that.dayOfWeek && Objects.equals(timeOfDay, that.timeOfDay);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(group, coach, dayOfWeek, timeOfDay);
+    }
+
+    @Override
+    public String toString() {
+        String age = group.getAge() == Age.CHILD ? "дети" : "взрослые";
+
+        return String.format(
+                "• %s (%02d:%02d)\n" +
+                        "  Группа: %s\n" +
+                        "  Категория: %s\n" +
+                        "  Тренер: %s %s %s",
+                dayOfWeek,
+                timeOfDay.getHours(),
+                timeOfDay.getMinutes(),
+                group.getTitle(),
+                age,
+                coach.getSurname(),
+                coach.getName(),
+                coach.getMiddleName()
+        );
+    }
+
 }
