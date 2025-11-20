@@ -1,5 +1,7 @@
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
+import java.util.TreeMap;
 
 public class Main {
 
@@ -7,14 +9,23 @@ public class Main {
         Timetable timetable = new Timetable();
         autofillTimetableByChatGPT(timetable);
         //printTimetable(timetable);
-        // Получение всех тренировок, упорядоченных по времени начала, за конкретный день недели.
-        Map<TimeOfDay, List<TrainingSession>> trainingSessionsAtDay = timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
-        for (var entry: trainingSessionsAtDay.entrySet()) {
-            for (var trains: entry.getValue()) {
-                System.out.println(trains);
+        // Получение всех тренировок, упорядоченных по времени начала, за конкретный день недели, например, понедельник
+        TreeMap<TimeOfDay, List<TrainingSession>> trainingSessionsAtDay = timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
+        for (TimeOfDay time : trainingSessionsAtDay.navigableKeySet()) {
+            for (TrainingSession trainingSession : trainingSessionsAtDay.get(time)) {
+                System.out.println(trainingSession);
             }
-
         }
+        //Получение всех тренировок, начинающихся в конкретное время, за конкретный день недели, например, среда, 18:00
+        int h = 18;
+        int m = 0;
+        List<TrainingSession> trainingSessionsAtDayAndTime = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.WEDNESDAY,
+                new TimeOfDay(18, 0));
+        System.out.printf("Тренировки в %s, начинающиеся в %d:%d%d:\n", DayOfWeek.WEDNESDAY, h, m, m);
+        for(TrainingSession ts : trainingSessionsAtDayAndTime) {
+            System.out.println(ts);
+        }
+        System.out.println(trainingSessionsAtDayAndTime);
 
 
 
