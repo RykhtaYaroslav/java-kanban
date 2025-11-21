@@ -1,6 +1,4 @@
 import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
 import java.util.TreeMap;
 
 public class Main {
@@ -16,16 +14,22 @@ public class Main {
                 System.out.println(trainingSession);
             }
         }
+
         //Получение всех тренировок, начинающихся в конкретное время, за конкретный день недели, например, среда, 18:00
         int h = 18;
         int m = 0;
         List<TrainingSession> trainingSessionsAtDayAndTime = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.WEDNESDAY,
-                new TimeOfDay(18, 0));
-        System.out.printf("Тренировки в %s, начинающиеся в %d:%d%d:\n", DayOfWeek.WEDNESDAY, h, m, m);
+                new TimeOfDay(h, m));
+        System.out.printf("Тренировки в %s, начинающиеся в %02d:%02d:\n", DayOfWeek.WEDNESDAY, h, m);
         for(TrainingSession ts : trainingSessionsAtDayAndTime) {
             System.out.println(ts);
         }
-        System.out.println(trainingSessionsAtDayAndTime);
+
+        // Выводит список всех тренеров в порядке уменьшения количества тренировко в неделю
+        timetable.getCountByCoaches();
+
+
+
 
 
 
@@ -33,7 +37,7 @@ public class Main {
     }
 
     static void autofillTimetableByChatGPT(Timetable timetable) {
-        /* в ТЗ нет задачи сделать консольный интерфейс. Я попросил чат ГПТ сделать заполнение расписание (Мне лень
+        /* В ТЗ нет задачи сделать консольный интерфейс. Я попросил чат ГПТ сделать заполнение расписание (Мне лень
         было придумывать тренировки и т.п.) вот с таким запросом:
         Напиши код для мэйн класса. Нужно создать нужные объекты и заполнить расписание. Пусть будет по 5-7 тренировок
         в день. Пусть минимум в 4-х днях будет по несколько тренировок в одно и то же время. 10 разных тренеров, 14

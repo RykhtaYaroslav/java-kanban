@@ -3,16 +3,19 @@ import java.util.Objects;
 public class Coach {
 
     //фамилия
-    private String surname;
+    private final String surname;
     //имя
-    private String name;
+    private final String name;
     //отчество
-    private String middleName;
+    private final String middleName;
+    // счётчик тренировок
+    private int trainsCount;
 
     public Coach(String surname, String name, String middleName) {
         this.surname = surname;
         this.name = name;
         this.middleName = middleName;
+        this.trainsCount = 0;
     }
 
     public String getSurname() {
@@ -42,10 +45,14 @@ public class Coach {
 
     @Override
     public String toString() {
-        return "{" +
-                "surname='" + surname + '\'' +
-                ", name='" + name + '\'' +
-                ", middleName='" + middleName + '\'' +
-                '}';
+        return surname + " " + name + " " + middleName + ". Количество тренировок: " + trainsCount;
+    }
+
+    public int getTrainsCount() {
+        return trainsCount;
+    }
+
+    public void setTrainsCount(int trainsCount) {
+        this.trainsCount = trainsCount;
     }
 }

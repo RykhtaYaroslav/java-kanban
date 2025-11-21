@@ -22,7 +22,7 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
 
     @Override
     public int compareTo(TimeOfDay o) {
-        if (hours < o.hours) {
+        if (hours != o.hours) {
             return hours - o.hours;
         }
         return minutes - o.minutes;
