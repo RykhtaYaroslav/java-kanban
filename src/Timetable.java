@@ -1,26 +1,33 @@
 import java.util.*;
 
 public class Timetable {
-
     private static final Map<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable = new HashMap<>();
+
+    public Timetable() {
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            timetable.put(dayOfWeek, new TreeMap<>());
+        }
+    }
+
     public void addNewTrainingSession(TrainingSession trainingSession) {
         //достаём день и время тренировки
-        DayOfWeek day = trainingSession.getDayOfWeek();
-        TimeOfDay time = trainingSession.getTimeOfDay();
-        if (!timetable.containsKey(day)) {
-            timetable.put(day, new TreeMap<TimeOfDay, List<TrainingSession>>());
-        }
+        DayOfWeek dayOfWeek = trainingSession.getDayOfWeek();
+        TimeOfDay timeOfDay = trainingSession.getTimeOfDay();
+
         // по дню достаём мапу с тренировками этого дня
-        TreeMap<TimeOfDay, List<TrainingSession>> trainSessionsAtDay = timetable.get(day);
+        TreeMap<TimeOfDay, List<TrainingSession>> trainSessionsAtDay = timetable.get(dayOfWeek);
+
         // Из мапы достаём список тренировок в конкретное время
-        if (!trainSessionsAtDay.containsKey(time)) {
-            trainSessionsAtDay.put(time, new ArrayList<TrainingSession>());
+        if (!trainSessionsAtDay.containsKey(timeOfDay)) {
+            trainSessionsAtDay.put(timeOfDay, new ArrayList<TrainingSession>());
         }
-        List<TrainingSession> trainSessionsAtTime = trainSessionsAtDay.get(time);
+
+        List<TrainingSession> trainSessionsAtTime = trainSessionsAtDay.get(timeOfDay);
+
         // записываем тренировку во все коллекции:
         trainSessionsAtTime.add(trainingSession);
         // увеличиваем количество тренировок у тренера:
-        trainingSession.getCoach().setTrainsCount(trainingSession.getCoach().getTrainsCount()+1);
+        trainingSession.getCoach().setTrainSessionsCount(trainingSession.getCoach().getTrainSessionsCount() + 1);
         // если создавать метод по удалению тренировки, то тамм так же, но будет минус 1
     }
 
@@ -38,11 +45,11 @@ public class Timetable {
         return timetable;
     }
 
-    // для сравнения коучей по количеству тренировок
+    // для сравнения коучей по количеству тренировок в порядке уменьшения тренировок
     Comparator<Coach> trainComparator = new Comparator<Coach>() {
         @Override
         public int compare(Coach c1, Coach c2) {
-            int diff = Integer.compare(c2.getTrainsCount(), c1.getTrainsCount());
+            int diff = Integer.compare(c2.getTrainSessionsCount(), c1.getTrainSessionsCount());
             if (diff != 0) return diff;
 
             diff = c1.getSurname().compareTo(c2.getSurname());
@@ -55,26 +62,17 @@ public class Timetable {
         }
     };
 
-    /* Пройтись по каждому дню и достать мапу дэйлиТрэйнМап
-    пройтись по каждому времени и достать из дэйлиТрэйнМап список тренировок.
-    Пройтись по списку тренировок и достать тренера, складывая его в триСет
-
-     */
-
-    public void getCountByCoaches() {
+    public Set<Coach> getCountByCoaches() {
         Set<Coach> coachSet = new TreeSet<>(trainComparator); // сет тренеров с сортировкой по тренировкам
         for (var day : timetable.keySet()) { // получил каждый день поочереди
-            Map<TimeOfDay, List<TrainingSession>> dayliTraisMap= timetable.get(day);
-            for (TimeOfDay time : dayliTraisMap.keySet()) { // получил каждое время по очереди
-                List<TrainingSession> trainsAtDayAndTime = dayliTraisMap.get(time);
+            TreeMap<TimeOfDay, List<TrainingSession>> dailyTrainsMap = timetable.get(day);
+            for (TimeOfDay time : dailyTrainsMap.navigableKeySet()) { // получил каждое время по очереди
+                List<TrainingSession> trainsAtDayAndTime = dailyTrainsMap.get(time);
                 for (TrainingSession trainingSession : trainsAtDayAndTime) {
-                    coachSet.add(trainingSession.getCoach()); // положил тренера в сет. Если он там есть уже- ничего не будет
+                    coachSet.add(trainingSession.getCoach()); // Положил тренера в сет. Если он там есть уже - ничего не будет
                 }
             }
         }
-        System.out.println("Список тренеров (в порядке уменьшения количества тренировок)");
-        for (Coach c: coachSet) {
-            System.out.println(c);
-        }
+        return coachSet;
     }
 }

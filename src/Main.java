@@ -1,14 +1,21 @@
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class Main {
 
     public static void main(String[] args) {
+        // Про метод мэйн в ТЗ ничего не было, поэтому добавил что-то от себя просто для проверок работоспособности
+        // Но тесты всё равно пригодились, в процессе написания тестов нашёл (незначительный?) баг, поправил
+
         Timetable timetable = new Timetable();
-        autofillTimetableByChatGPT(timetable);
-        //printTimetable(timetable);
+
+        autoFillTimetableByChatGPT(timetable);
+        printTimetable(timetable);
+
         // Получение всех тренировок, упорядоченных по времени начала, за конкретный день недели, например, понедельник
         TreeMap<TimeOfDay, List<TrainingSession>> trainingSessionsAtDay = timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
+
         for (TimeOfDay time : trainingSessionsAtDay.navigableKeySet()) {
             for (TrainingSession trainingSession : trainingSessionsAtDay.get(time)) {
                 System.out.println(trainingSession);
@@ -18,25 +25,25 @@ public class Main {
         //Получение всех тренировок, начинающихся в конкретное время, за конкретный день недели, например, среда, 18:00
         int h = 18;
         int m = 0;
+
         List<TrainingSession> trainingSessionsAtDayAndTime = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.WEDNESDAY,
                 new TimeOfDay(h, m));
-        System.out.printf("Тренировки в %s, начинающиеся в %02d:%02d:\n", DayOfWeek.WEDNESDAY, h, m);
-        for(TrainingSession ts : trainingSessionsAtDayAndTime) {
-            System.out.println(ts);
+
+        System.out.printf("\n\nТренировки в %s, начинающиеся в %02d:%02d:\n", DayOfWeek.WEDNESDAY, h, m);
+        for (TrainingSession ts : trainingSessionsAtDayAndTime) {
+            System.out.println(ts + "\n");
         }
 
-        // Выводит список всех тренеров в порядке уменьшения количества тренировко в неделю
-        timetable.getCountByCoaches();
+        // Выводит список всех тренеров в порядке уменьшения количества тренировок в неделю
+        Set<Coach> coachSet = timetable.getCountByCoaches();
 
-
-
-
-
-
-
+        System.out.println("Список тренеров (в порядке уменьшения количества тренировок)");
+        for (Coach c : coachSet) {
+            System.out.println(c);
+        }
     }
 
-    static void autofillTimetableByChatGPT(Timetable timetable) {
+    static void autoFillTimetableByChatGPT(Timetable timetable) {
         /* В ТЗ нет задачи сделать консольный интерфейс. Я попросил чат ГПТ сделать заполнение расписание (Мне лень
         было придумывать тренировки и т.п.) вот с таким запросом:
         Напиши код для мэйн класса. Нужно создать нужные объекты и заполнить расписание. Пусть будет по 5-7 тренировок
@@ -85,9 +92,6 @@ public class Main {
         TimeOfDay t1800 = new TimeOfDay(18, 0);
         TimeOfDay t1930 = new TimeOfDay(19, 30);
 
-        // ----------- ПОДГОТОВКА ТАБЛИЦЫ -----------
-
-
         // ----------- РАСПИСАНИЕ БЕЗ КОНФЛИКТОВ -----------
         // Каждый день 5–7 тренировок
         // 4 дня содержат по 2 тренировки в одно время (14:00 и 18:00)
@@ -104,7 +108,7 @@ public class Main {
         add(timetable, groups.get(6), coaches.get(6), DayOfWeek.TUESDAY, t0900);
         add(timetable, groups.get(7), coaches.get(7), DayOfWeek.TUESDAY, t1100);
         add(timetable, groups.get(8), coaches.get(8), DayOfWeek.TUESDAY, t1400);
-        add(timetable, groups.get(9), coaches.get(9), DayOfWeek.TUESDAY, t1600);
+        add(timetable, groups.get(9), coaches.get(0), DayOfWeek.TUESDAY, t1600);
         add(timetable, groups.get(10), coaches.get(0), DayOfWeek.TUESDAY, t1800);
         add(timetable, groups.get(11), coaches.get(1), DayOfWeek.TUESDAY, t1800); // дубль времени
 
@@ -117,8 +121,8 @@ public class Main {
         add(timetable, groups.get(3), coaches.get(7), DayOfWeek.WEDNESDAY, t1800); // дубль времени
 
         // ===== THURSDAY =====
-        add(timetable, groups.get(4), coaches.get(8), DayOfWeek.THURSDAY, t0900);
-        add(timetable, groups.get(5), coaches.get(9), DayOfWeek.THURSDAY, t1100);
+        add(timetable, groups.get(4), coaches.get(1), DayOfWeek.THURSDAY, t0900);
+        add(timetable, groups.get(5), coaches.get(0), DayOfWeek.THURSDAY, t1100);
         add(timetable, groups.get(6), coaches.get(0), DayOfWeek.THURSDAY, t1400);
         add(timetable, groups.get(7), coaches.get(1), DayOfWeek.THURSDAY, t1400); // дубль времени
         add(timetable, groups.get(8), coaches.get(2), DayOfWeek.THURSDAY, t1600);
@@ -150,7 +154,6 @@ public class Main {
     }
 
     static void printTimetable(Timetable timetable) {
-        // ----------- ВЫВОД -----------
         for (var entry : timetable.getTimetable().entrySet()) {
             System.out.println("----------------------------------------------");
             for (var time : entry.getValue().entrySet()) {
@@ -165,49 +168,6 @@ public class Main {
 
     private static void add(Timetable t, Group g, Coach c, DayOfWeek d, TimeOfDay time) {
         t.addNewTrainingSession(new TrainingSession(g, c, d, time));
-    }
-
-    static void myTimetable() {
-        Group group1 = new Group("Скалодром", Age.ADULT, 60);
-        Group group2 = new Group("Пауэрлифтинг", Age.ADULT, 60);
-        Group group3 = new Group("Детский фитнес", Age.CHILD, 45);
-        Group group4 = new Group("Плаванье", Age.CHILD, 45);
-        // в ТЗ Ничего не говорилось о консольном интерфейсе, поэтому я сам сделал разные тренировки
-
-        Coach coach1 = new Coach("Иванов", "Иван", "Иваныч");
-        Coach coach2 = new Coach("Петров", "Пётр", "Петрович");
-        Coach coach3 = new Coach("Александрова", "Александра", "Александровна");
-
-        TrainingSession trainingSession1 = new TrainingSession(group1, coach1, DayOfWeek.MONDAY, new TimeOfDay(10, 30));
-        TrainingSession trainingSession2 = new TrainingSession(group1, coach2, DayOfWeek.FRIDAY, new TimeOfDay(14, 0));
-        TrainingSession trainingSession3 = new TrainingSession(group2, coach2, DayOfWeek.SUNDAY, new TimeOfDay(10, 30));
-        TrainingSession trainingSession4 = new TrainingSession(group2, coach2, DayOfWeek.WEDNESDAY, new TimeOfDay(12, 0));
-        TrainingSession trainingSession5 = new TrainingSession(group3, coach3, DayOfWeek.TUESDAY, new TimeOfDay(18, 0));
-        TrainingSession trainingSession6 = new TrainingSession(group3, coach3, DayOfWeek.THURSDAY, new TimeOfDay(19, 45));
-        TrainingSession trainingSession7 = new TrainingSession(group4, coach3, DayOfWeek.MONDAY, new TimeOfDay(20, 0));
-        TrainingSession trainingSession8 = new TrainingSession(group4, coach1, DayOfWeek.SATURDAY, new TimeOfDay(15, 0));
-        /* Для простоты тут каждый раз new TimeOfDay, в реальности же время начала тренировки может быть одинаковое для
-        разных тренировок. Но раз нет консольно интерфейса, то, наверное, такое упрощение уместно
-        Кроме того, в реальном спортзале не будет время начала типа "12:47". Все тренировки будут начинаться только в
-        0 минут или в 30 (ну в худшем случае в 15 или 45 минут), так что можно будет сделать объекты времена для каждого
-        такого случая и использовать их при создании тренировки. Или Это нерационально было бы? Тут я не знаю как лучше */
-        /* Или так как время не любое, а только 0 минут и 30, может быть вообще стоит сделать enum?*/
-
-        Timetable timetable = new Timetable();
-        timetable.addNewTrainingSession(trainingSession1);
-        timetable.addNewTrainingSession(trainingSession2);
-        timetable.addNewTrainingSession(trainingSession3);
-        timetable.addNewTrainingSession(trainingSession4);
-        timetable.addNewTrainingSession(trainingSession5);
-        timetable.addNewTrainingSession(trainingSession6);
-        timetable.addNewTrainingSession(trainingSession7);
-        timetable.addNewTrainingSession(trainingSession8);
-
-        //HashSet< > timetableSet timetable.getTimetable().keySet()
-
-        System.out.println(timetable.getTimetable().get(DayOfWeek.MONDAY));
-
-
     }
 }
 

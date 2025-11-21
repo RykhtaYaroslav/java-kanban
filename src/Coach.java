@@ -1,7 +1,6 @@
 import java.util.Objects;
 
 public class Coach {
-
     //фамилия
     private final String surname;
     //имя
@@ -9,13 +8,13 @@ public class Coach {
     //отчество
     private final String middleName;
     // счётчик тренировок
-    private int trainsCount;
+    private int trainSessionsCount;
 
     public Coach(String surname, String name, String middleName) {
         this.surname = surname;
         this.name = name;
         this.middleName = middleName;
-        this.trainsCount = 0;
+        this.trainSessionsCount = 0;
     }
 
     public String getSurname() {
@@ -45,14 +44,14 @@ public class Coach {
 
     @Override
     public String toString() {
-        return surname + " " + name + " " + middleName + ". Количество тренировок: " + trainsCount;
+        return surname + " " + name + " " + middleName + ". Количество тренировок: " + trainSessionsCount;
     }
 
-    public int getTrainsCount() {
-        return trainsCount;
+    public int getTrainSessionsCount() {
+        return trainSessionsCount;
     }
 
-    public void setTrainsCount(int trainsCount) {
-        this.trainsCount = trainsCount;
+    public void setTrainSessionsCount(int trainSessionsCount) {
+        this.trainSessionsCount = trainSessionsCount;
     }
 }
