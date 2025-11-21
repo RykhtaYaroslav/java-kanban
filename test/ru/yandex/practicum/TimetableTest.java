@@ -1,3 +1,5 @@
+package ru.yandex.practicum;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -6,8 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+
+
 public class TimetableTest {
     // Покрытие тестами класса Timetable 100% по методам и по строкам
+
     @Test // Тест номер 1.
     // Не понимаю смысла этого теста. Этот же функционал тестирует тест 2, но первые три теста - из ТЗ скопированы
     public void testGetTrainingSessionsForDaySingleSession() {

@@ -1,3 +1,5 @@
+package ru.yandex.practicum;
+
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
